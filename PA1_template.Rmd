@@ -7,12 +7,34 @@ output:
 
 
 ## Loading and preprocessing the data
-```{r}
-act <- read.csv("activity.csv", colClasses=c(int, Date, int))
 
+The data is preprocessed such that the interval column is changed to be minutes into the day, meaning the value will be between 0 and 1435. Originally the interval is of the form "%H%M", so without preprocessing there would be jumps e.g. going from 155 to 200.
+
+
+```{r}
+if (!file.exists("activity.csv")) {
+  unzip("activity.zip")
+}
+act <- read.csv("activity.csv", colClasses=c("numeric", "Date", "character"))
+act$interval <- sapply(act[,3], function(x) {
+  if (nchar(x) < 3) {
+      as.integer(x)
+  } else if (nchar(x) == 3) {
+      as.integer(substr(x, 1, 1)) * 60 + as.integer(substr(x, 2, 3))
+  } else {
+      as.integer(substr(x, 1, 2)) * 60 + as.integer(substr(x, 3, 4))
+  }
+  })
+```
 
 ## What is mean total number of steps taken per day?
-
+```{r}
+library(ggplot2)
+steps <- tapply(act[,1], act[,2], sum)
+qplot(steps, binwidth=1000)
+mean(steps, na.rm=TRUE)
+median(steps, na.rm=TRUE)
+```
 
 
 ## What is the average daily activity pattern?
