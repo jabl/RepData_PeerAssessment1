@@ -30,7 +30,7 @@ act$interval <- sapply(act[,3], function(x) {
 ## What is mean total number of steps taken per day?
 ```{r}
 library(ggplot2)
-steps <- tapply(act[,1], act[,2], sum)
+steps <- tapply(act$steps, act$date, sum)
 qplot(steps, binwidth=1000)
 mean(steps, na.rm=TRUE)
 median(steps, na.rm=TRUE)
@@ -38,7 +38,22 @@ median(steps, na.rm=TRUE)
 
 
 ## What is the average daily activity pattern?
-
+```{r}
+s <- split(act, act$interval)
+s2 <- lapply(s, function(x) {
+  data.frame(steps=mean(x$steps, na.rm=TRUE), interval=x$interval[1])
+})
+avg_daily <- do.call("rbind", s2)
+qplot(interval, steps, data=avg_daily, geom="line")
+max_int <- avg_daily$interval[which.max(avg_daily$steps)]
+min2time <- function(x) {
+  # Convert a "minutes since midnight" to hour:minute
+  paste(as.character(floor(x/60)), ":", as.character(x%%60), sep="")
+}
+print(sprintf("Interval with maximum steps: %s - %s",
+              min2time(max_int),
+              min2time(max_int + 5)))
+```
 
 
 ## Imputing missing values
