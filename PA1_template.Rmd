@@ -58,6 +58,29 @@ print(sprintf("Interval with maximum steps: %s - %s",
 
 ## Imputing missing values
 
+### Rows with missing values
+```{r}
+sum(rowSums(is.na(act)))
+```
 
+### Strategy for handling missing step values
 
+I chose to use the median for that interval. This does not take into account day of week variations, but intuitively it at least seems better than taking the mean or median for that day. That is, the assumption is that the behavior is more correlated based on the time of day rather than within the day. I chose the median rather than the mean as the median is more robust with skewed distributionand outliers.
+
+```{r}
+s <- split(act, act$interval)
+#median_daily <- list()
+s2 <- lapply(s, function(x) {
+  #data.frame(steps=median(x$steps, na.rm=TRUE), interval=x$interval[1])
+  y <- list()
+  y[[as.character(x$interval[1])]] <- median(x$steps, na.rm=TRUE)
+})
+median_daily <- do.call("c", s2)
+act_fill <- act
+for (i in 1:nrow(act_fill)) {
+  if (is.na(act_fill$steps[i])) {
+    act_fill$steps[i] <- median_daily[[as.character(act_fill$interval[i])]]
+  }
+}
+```
 ## Are there differences in activity patterns between weekdays and weekends?
