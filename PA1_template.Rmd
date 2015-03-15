@@ -82,5 +82,12 @@ for (i in 1:nrow(act_fill)) {
     act_fill$steps[i] <- median_daily[[as.character(act_fill$interval[i])]]
   }
 }
+steps <- tapply(act_fill$steps, act_fill$date, sum)
+qplot(steps, binwidth=1000)
+mean(steps, na.rm=TRUE)
+median(steps, na.rm=TRUE)
 ```
+
+One can see that replacing the missing values by the daily median pushes both the mean and median of the sum of daily steps lower. Most of this might be due to the peak that can be seen in the histogram at around 1000 steps, which isn't there in the original dataset containing NA's.
+
 ## Are there differences in activity patterns between weekdays and weekends?
