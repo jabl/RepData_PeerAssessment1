@@ -94,8 +94,6 @@ One can see that replacing the missing values by the daily median pushes both th
 
 ```{r}
 library(ggplot2)
-#wd <- weekdays(act_fill$date)
-#weekend <- wd == 'Sunday' | wd == 'Saturday'
 act_fill$wd <- apply(act_fill, 1, function(x) {
   wd <- weekdays(as.Date(x[2]))
   if (wd == 'Sunday' | wd == 'Saturday') {
