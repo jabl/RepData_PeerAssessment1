@@ -91,3 +91,22 @@ median(steps, na.rm=TRUE)
 One can see that replacing the missing values by the daily median pushes both the mean and median of the sum of daily steps lower. Most of this might be due to the peak that can be seen in the histogram at around 1000 steps, which isn't there in the original dataset containing NA's.
 
 ## Are there differences in activity patterns between weekdays and weekends?
+
+```{r}
+library(ggplot2)
+#wd <- weekdays(act_fill$date)
+#weekend <- wd == 'Sunday' | wd == 'Saturday'
+act_fill$wd <- apply(act_fill, 1, function(x) {
+  wd <- weekdays(as.Date(x[2]))
+  if (wd == 'Sunday' | wd == 'Saturday') {
+    "weekend"
+  } else {
+    "weekday"
+  }
+})
+act_fill$wd <- as.factor(act_fill$wd)
+qplot(interval, steps, data=act_fill, facets= wd ~., geom="line",
+      ylab="Number of steps")
+```
+
+One can see that on weekends, there is less activity, and the activity is shifted towards the evening, whereas on weekdays the highest activity occurs in the morning, presumably when people are going to work/school/whatever.
